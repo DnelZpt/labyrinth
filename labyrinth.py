@@ -37,6 +37,10 @@ class Labyrinth:
         The path to the JSON file that contains the labyrinth data.
     list_tiles : list
         List to store the tiles.
+    _list_edges : list
+        List to store the edges IDs.
+    _list_nodes : list
+        List to store the nodes IDs.
     rows : int
         The number of rows in the labyrinth.
     columns : int
@@ -74,6 +78,14 @@ class Labyrinth:
         Get a specific tile from the list_tiles list.
     _mark_turtle(self, turtle_positions: dict):
         Mark the turtle's position and direction on the labyrinth.
+    draw_graph(self, graph: dict):
+        Draw the graph on the canvas.
+    delete_graph(self):
+        Delete the graph from the canvas.
+    _draw_node(self, center: tuple, radius: int, color: str):
+        Draw a node (circle) on the canvas.
+    _draw_edge(self, start: tuple, end: tuple):
+        Draw an edge (line) on the canvas.
     """
 
     def __init__(self, rows: int, columns: int, path=''):
@@ -87,12 +99,17 @@ class Labyrinth:
         :param path: (str) The path to the JSON file that contains the labyrinth data. Default is an empty string.
         """
         self.path = path  # Path to the JSON file
+
         self.list_tiles = list()  # List to store the tiles
+        self._list_edges = list()  # List to store the edges IDs
+        self._list_nodes = list()  # List to store the nodes IDs
 
         self.rows, self.columns = rows, columns  # Number of rows and columns in the labyrinth
         # Create a 2D array to store the tiles (not a definitive feature. Could be deleted)
         self.tile_array = [[0 for _ in range(columns)] for _ in range(rows)]
         self.tile_length = 50  # Length of each tile in pixels
+        self.tiles_centers = list()  # List to store the center point of each tile
+        self._tiles_marks = list()  # List to store the marks IDs of the tiles
 
         self.canvas_sz = self._get_canvas_sz()  # Size of the canvas
         self.window = tk.Tk()  # Create a new Tkinter window
@@ -138,6 +155,8 @@ class Labyrinth:
                 tile_pos_x = j * self.tile_length + 20  # Add 20 pixels to the x position for the window border
                 tile_pos_y = i * self.tile_length + 20  # Add 20 pixels to the y position for the window border
                 tile_mn = Tile(self.canvas, tile_pos_x, tile_pos_y, length=self.tile_length)
+                self.tiles_centers.append((tile_pos_x + self.tile_length // 2,
+                                           tile_pos_y + self.tile_length // 2))  # Store the top left point of the tile
                 self.tile_array[i][j] = tile_mn  # This still is a possible feature (could be deleted)
                 self.list_tiles.append(tile_mn)  # Add the tile to the list of tiles
                 tile_mn.draw()  # Draw the tile on the canvas
@@ -183,6 +202,7 @@ class Labyrinth:
             if __name__ == '__main__':
                 print('The graph structure has been updated from Queue.')
             self._check_walls(graph)
+            self.draw_graph(graph)
             self._mark_turtle(graph['turtle'])
 
         else:
@@ -197,6 +217,7 @@ class Labyrinth:
                 if __name__ == '__main__':
                     print('The graph structure has been updated from file.')
                 self._check_walls(graph)
+                self.draw_graph(graph)
                 self._mark_turtle(graph['turtle'])
 
         if imprimir:
@@ -206,16 +227,37 @@ class Labyrinth:
 
         self.canvas.after(10, self.update_maze, imprimir)
 
+    def _mark_tiles(self, colors: dict):
+        """
+        Draw a node (circle) on the canvas for each tile in the labyrinth.
+        :return: None
+        """
+        self._delete_marks()
+        for node in colors:
+            color = colors[str(node)]
+            center = self.tiles_centers[int(node)]
+            self._tiles_marks.append(self._draw_node(center, self.tile_length // 4, color))
+
+    def _delete_marks(self):
+        """
+        Delete the nodes from the canvas.
+        :return: None
+        """
+        if self._tiles_marks:
+            for mark in self._tiles_marks:
+                self.canvas.delete(mark)
+            self._tiles_marks = list()
+
     def _check_walls(self, graph: dict):
         """
          Check and update the walls of the labyrinth based on the graph structure.
 
          This method iterates over the vertices in the graph. For each pair of vertices, it checks if there is an edge
-         between them in the graph. If there is an edge and its value is 0, it means there is a wall between the vertices
-         in the labyrinth, so it calls the _update_border method to update the border of the tile at the position of the
-         first vertex to exist. If the value of the edge is not 0, it means there is no wall between the vertices in the
-         labyrinth, so it calls the _update_border method to update the border of the tile at the position of the first
-         vertex to not exist.
+         between them in the graph. If there is an edge and its value is 0, it means there is a wall between the
+         vertices in the labyrinth, so it calls the _update_border method to update the border of the tile at the
+         position of the first vertex to exist. If the value of the edge is not 0, it means there is no wall between the
+         vertices in the labyrinth, so it calls the _update_border method to update the border of the tile at the
+         position of the first vertex to not exist.
 
          :param graph: (dict) The graph structure of the labyrinth. It is a dictionary with two keys: 'V' and 'E'.
                        'V' maps to a dictionary where each key is a vertex and the value is a list of vertices adjacent to the key.
@@ -285,9 +327,10 @@ class Labyrinth:
          If the second vertex is 'f', it means the turtle is facing up. Otherwise, it determines the direction of the turtle
          based on the relative positions of the vertices and rotates the turtle to the determined direction.
 
-         :param turtle_positions: (dict) A dictionary where each key is a vertex and the value is the vertex that the turtle
+        :param turtle_positions: (dict) A dictionary where each key is a vertex and the value is the vertex that the turtle
                                   is facing towards. If the value is 'f', it means the turtle is in the last node
                                   and facing up.
+
          :return: None
          """
         for tile in self.list_tiles:
@@ -318,6 +361,92 @@ class Labyrinth:
                 tile.rotate_turtle(direction)
                 # Draw the turtle on the tile
                 tile.change_turtle_state(erase=False)
+
+    def draw_graph(self, graph: dict):
+        """
+        Draw the graph on the canvas.
+
+        This method first checks if the graph exists. If it does, it deletes the previous graph drawn on the canvas.
+        Then it calculates the radius of the nodes to be drawn.
+
+        It then iterates over the edges in the graph. For each edge that exists (value is not 0), it splits the edge into
+        its origin and destination vertices, calculates the center points of these vertices, and draws the edge on the canvas.
+
+        It then checks if the origin and destination vertices have a specified color in the graph. If they do, it uses that
+        color to draw the nodes. If they don't, it uses the default color 'coral' to draw the nodes.
+
+        :return: None
+        """
+
+        # Delete the previous graph drawn on the canvas
+        self.delete_graph()
+        radius = self.tile_length // 2 - self.tile_length // 4
+        # Iterate over the edges in the graph
+        for edge in graph['E']:
+            # Check if the edge exists
+            if graph['E'][edge] != 0:
+                vertex_o, vertex_i = edge[1:-1].split(', ')  # Split the edge into origin and destination vertices
+                vertex_o, vertex_i = int(vertex_o), int(vertex_i)
+                center_o = self.tiles_centers[vertex_o]
+                center_i = self.tiles_centers[vertex_i]
+
+                # Draw the edge on the canvas
+                self._list_edges.append(self._draw_edge(center_o, center_i))
+                # Check if the origin and destination vertices have a specified color
+                color_o = graph['colors'][str(vertex_o)] if graph['colors'].get(
+                    str(vertex_o)) else 'coral'
+
+                self._list_nodes.append(self._draw_node(center_o, radius, color=color_o))
+                color_i = graph['colors'][str(vertex_i)] if graph['colors'].get(
+                    str(vertex_i)) else 'coral'
+                self._list_nodes.append(self._draw_node(center_i, radius, color=color_i))
+
+    def delete_graph(self):
+        """
+        Delete the graph from the canvas.
+
+        This method iterates over the list of edges and nodes in the graph. For each edge and node,
+        it deletes it from the canvas.
+        :return: None
+        """
+        if self._list_edges:
+            for edge in self._list_edges:
+                self.canvas.delete(edge)
+            self._list_edges = list()  # Reset the list of edges
+
+        if self._list_nodes:
+            for node in self._list_nodes:
+                self.canvas.delete(node)
+            self._list_nodes = list()  # Reset the list of nodes
+
+    def _draw_node(self, center: tuple, radius: int, color: str):
+        """
+        Draw a node (circle) on the canvas.
+
+        This method creates a circle on the canvas at the specified center point with the specified radius and color.
+        The circle is filled with the specified color.
+
+        :param center: (tuple) A tuple containing the x and y coordinates of the center of the circle.
+        :param radius: (int) The radius of the circle.
+        :param color: (str) The color to fill the circle with.
+        :return: (int) The ID of the created circle.
+        """
+        circle = self.canvas.create_oval(center[0] - radius, center[1] - radius, center[0] + radius, center[1] + radius,
+                                         fill=color, outline='')
+        return circle
+
+    def _draw_edge(self, start: tuple, end: tuple):
+        """
+        Draw an edge (line) on the canvas.
+
+        This method creates a line on the canvas from the start point to the end point with the specified color.
+
+        :param start: (tuple) A tuple containing the x and y coordinates of the start point of the line.
+        :param end: (tuple) A tuple containing the x and y coordinates of the end point of the line.
+        :return: (int) The ID of the created line.
+        """
+        line = self.canvas.create_line(start[0], start[1], end[0], end[1])
+        return line
 
 
 if __name__ == '__main__':
