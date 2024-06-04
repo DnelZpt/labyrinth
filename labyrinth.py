@@ -202,7 +202,7 @@ class Labyrinth:
             if __name__ == '__main__':
                 print('The graph structure has been updated from Queue.')
             self._check_walls(graph)
-            # self.draw_graph(graph)
+            self._mark_tiles(graph['colors'])
             self._mark_turtle(graph['turtle'])
 
         else:
@@ -217,7 +217,7 @@ class Labyrinth:
                 if __name__ == '__main__':
                     print('The graph structure has been updated from file.')
                 self._check_walls(graph)
-                # self.draw_graph(graph)
+                self._mark_tiles(graph['colors'])
                 self._mark_turtle(graph['turtle'])
 
         if imprimir:
@@ -234,7 +234,7 @@ class Labyrinth:
         """
         self._delete_marks()
         for node in colors:
-            color = colors[str(node)]
+            color = colors[node]
             center = self.tiles_centers[int(node)]
             self._tiles_marks.append(self._draw_node(center, self.tile_length // 4, color))
 

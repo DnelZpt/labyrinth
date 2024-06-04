@@ -181,7 +181,7 @@ if __name__ == '__main__':
     # List of all vertices to show a turtle (the key) and the turtle's goal (the value)
     turtle_list = {}# {0: 1, 1: 4, 4: 3, 5: 'f'}  # 'f' is a centinel value to represent turtle's exit
     # Create a dictionary with the colors of the vertices
-    colors_list = {0: 'red', 1: 'blue', 2: 'green', 4: 'purple', 5: 'white'}
+    colors_list = {"0": 'red', "1": 'blue', "2": 'green', "4": 'black', "5": 'white'}
     # Create a graph
     grafo = Grafo(vertex_list, edges_list, turtle_list, colors_list)
     # Save the graph as a json file
