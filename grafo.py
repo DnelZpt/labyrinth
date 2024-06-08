@@ -42,6 +42,9 @@ class Grafo:
     turtle : dict
         The turtle's position and direction. Each key is a vertex and the value is the vertex that the turtle is facing towards.
         If the value is 'f', it means the turtle is in the last node and facing up.
+    colors : dict
+        The colors of the vertices. Each key is a vertex and the value is the color of the vertex.
+
 
     Methods:
     -------
