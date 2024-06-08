@@ -124,14 +124,14 @@ grafo.save_graph('/dev/shm/graph.json')
 ```
 
 This will create a JSON file that represents the labyrinth as a graph. The JSON file will contain the adjacency list of
-vertices, the adjacency list of weighted edges, and the turtle's position and direction.
+vertices, the adjacency list of weighted edges, the turtle's position and direction, and the color marks for the tiles.
 
 
 For the example above, the JSON file would look like this:
 
 ```json
 {
-  "vertex_list": {
+  "V": {
     "0": [1, 3],
     "1": [0, 2, 4],
     "2": [1, 5],
@@ -139,7 +139,7 @@ For the example above, the JSON file would look like this:
     "4": [1, 3, 5],
     "5": [2, 4]
   },
-  "edges_list": {
+  "E": {
     "(0, 1)": 1,
     "(0, 3)": 0,
     "(1, 2)": 0,
@@ -148,12 +148,13 @@ For the example above, the JSON file would look like this:
     "(3, 4)": 1,
     "(4, 5)": 1
   },
-  "turtle_list": {
+  "turtle": {
     "0": 1,
     "1": 4,
     "4": 5,
     "5": "f"
-  }
+  },
+  "colors": {}
 }
 ```
 And the labyrinth would look like this:
@@ -161,6 +162,34 @@ And the labyrinth would look like this:
   <img src="imgs/updated_maze.png" alt="Updated Maze">
 </p>
 
+#### Using Colors and Marking Tiles
+
+The `Grafo` class in the `grafo.py` module allows you to color the vertices (tiles) of the labyrinth and mark them with circles. Here's how to use it:
+
+1. Define a dictionary with the colors of the vertices. The keys of the dictionary are the labels of the vertices, and the values are the colors. The colors should be specified as strings that are recognized by the Tkinter library (e.g., 'red', 'blue', 'green', 'black', 'white').
+
+```python
+colors_list = {"0": 'red', "1": 'blue', "2": 'green', "4": 'black', "5": 'white'}
+```
+2. Pass the `colors_list` dictionary as an argument when initializing a new instance of the Grafo class.
+
+```python
+grafo = Grafo(vertex_list, edges_list, turtle_list, colors_list)
+```
+
+Or update the colors list after initializing the Grafo class using the `colors` attribute:
+
+```python
+grafo.colors = colors_list
+```
+
+The coloured labyrinth would look like this:
+
+<p align="center">
+  <img src="imgs/mark_tiles.png" alt="Tiles marked">
+</p>
+
+**Note that the `colors_list` dictionary is optional. If you don't provide it, the vertices will not be colored.**
 
 ### Globales Module
 
@@ -187,7 +216,6 @@ Then, navigate to the project directory and run the `ejemplo_1.py` file in a sep
 python3 ejemplo_1.py
 ```
 
-
 ### Ejemplo_2 Module
 
 This module demonstrates how to use multi-threading to run the Front-end and Back-end modules in different threads.
@@ -198,8 +226,6 @@ To run this module, navigate to the project directory and run the `ejemplo_2.py`
 ```bash
 python3 ejemplo_2.py
 ```
-
-
 
 ## License
 
