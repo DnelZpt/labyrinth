@@ -191,6 +191,27 @@ The coloured labyrinth would look like this:
 
 **Note that the `colors_list` dictionary is optional. If you don't provide it, the vertices will not be colored.**
 
+#### Show the Graph in the GUI
+
+The `show` method in the `Grafo` class is used to set the `show_graph` attribute to `True`. This attribute is used to display the graph in the GUI.
+
+If a node has a color, it will be displayed with that color. Else, it will be displayed with the default color (coral).
+
+Here's an example:
+
+```python
+grafo = Grafo()
+# ... add edges to the graph ...
+# ... define colors for some vertices ...
+grafo.show()
+# ... send the graph to the queue or save it as a JSON file ...
+```
+After calling the show method, the graph will be displayed in the GUI when the program is run. This can be useful for visualizing the graph structure and debugging.
+
+<p align="center">
+  <img src="imgs/disp_graph.png" alt="Show Maze Graph">
+</p>
+
 ### Globales Module
 
 This module contains global variables that are used for thread synchronization and inter-thread communication. It uses
