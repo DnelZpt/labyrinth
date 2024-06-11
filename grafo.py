@@ -44,7 +44,12 @@ class Grafo:
         If the value is 'f', it means the turtle is in the last node and facing up.
     colors : dict
         The colors of the vertices. Each key is a vertex and the value is the color of the vertex.
-
+    _show_graph : bool
+        A flag to control the visibility of the graph in the GUI. If True, the graph will be displayed in the GUI; if False,
+        the graph will not be displayed.
+    _cluster_graphs : bool
+        A flag to control whether only the colored vertices should be shown in the GUI. If True, only the colored vertices
+        will be displayed; if False, all vertices will be displayed.
 
     Methods:
     -------
@@ -61,7 +66,7 @@ class Grafo:
     add_edge(self, vertex_o: int, vertex_i: int, weight: int):
         Adds an edge between two vertices in the graph.
     show(self):
-        Sets the show_graph attribute to True. This attribute is used to show the graph in the GUI.
+        Sets the _show_graph attribute to True. This attribute is used to show the graph in the GUI.
     """
 
     def __init__(self, V: dict = None, E: dict = None, turtle: dict = None, colors: dict = None):
@@ -94,7 +99,7 @@ class Grafo:
         if colors is None:
             colors = dict()
         self.colors = colors
-        self.show_graph = False
+        self._show_graph = False
 
     def __repr__(self):
         """
@@ -112,7 +117,8 @@ class Grafo:
         :return: (dict) The graph. It includes 'V' followed by the vertices of the graph, 'E' followed by the edges of the
                  graph, and 'turtle' followed by the turtle's position and direction.
         """
-        grafo_g = {'V': self.V, 'E': self.E, 'turtle': self.turtle, 'colors': self.colors, 'show': self.show_graph}
+        grafo_g = {'V': self.V, 'E': self.E, 'turtle': self.turtle, 'colors': self.colors,
+                   'show': (self._show_graph, self._cluster_graphs)}
         return grafo_g
 
     def send_graph(self):
@@ -176,12 +182,16 @@ class Grafo:
             # Add the edge to the graph
             self.E[f"({vertex_o}, {vertex_i})"] = weight
 
-    def show(self):
+    def show(self, show: bool = True):
         """
-        Set the show_graph attribute to True. This attribute is used to show the graph in the GUI.
+        This method is used to control the visibility of the graph in the GUI. It sets the _show_graph attribute to the
+        value passed in the 'show' parameter. If 'show' is True, the graph will be displayed in the GUI; if 'show' is False,
+        the graph will not be displayed.
+
+        :param show: (bool) A flag to control the visibility of the graph in the GUI. Default is True.
         :return: None
         """
-        self.show_graph = True
+        self._show_graph = show
 
 
 if __name__ == '__main__':
@@ -192,12 +202,12 @@ if __name__ == '__main__':
     # if edge weight is 1, there is a path between the nodes (a wall does not exist)
     edges_list = {'(0, 1)': 1, '(0, 3)': 0, '(1, 2)': 0, '(1, 4)': 1, '(2, 5)': 0, '(3, 4)': 1, '(4, 5)': 1}
     # List of all vertices to show a turtle (the key) and the turtle's goal (the value)
-    turtle_list = {} # {0: 1, 1: 4, 4: 3, 5: 'f'}  # 'f' is a centinel value to represent turtle's exit
+    turtle_list = {}  # {0: 1, 1: 4, 4: 3, 5: 'f'}  # 'f' is a centinel value to represent turtle's exit
     # Create a dictionary with the colors of the vertices
     colors_list = {"0": 'red', "1": 'blue', "2": 'green', "4": 'black', "5": 'white'}
     # Create a graph
     grafo = Grafo(vertex_list, edges_list, turtle_list, colors_list)
-    # grafo.show()
+    grafo.show(False)
 
     # Save the graph as a json file
     grafo.save_graph('/dev/shm/graph.json')

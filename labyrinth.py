@@ -204,13 +204,13 @@ class Labyrinth:
             if __name__ == '__main__':
                 print('The graph structure has been updated from Queue.')
             self._check_walls(graph)
-            self._mark_tiles(graph['colors'])
 
-            if graph['show']:
+            if graph['show'][0]:
                 self.draw_graph(graph)
             else:
                 self.delete_graph()
 
+            self._mark_tiles(graph['colors'])
             self._mark_turtle(graph['turtle'])
 
         else:
@@ -225,13 +225,13 @@ class Labyrinth:
                 if __name__ == '__main__':
                     print('The graph structure has been updated from file.')
                 self._check_walls(graph)
-                self._mark_tiles(graph['colors'])
 
-                if graph['show']:
+                if graph['show'][0]:
                     self.draw_graph(graph)
                 else:
                     self.delete_graph()
 
+                self._mark_tiles(graph['colors'])
                 self._mark_turtle(graph['turtle'])
 
         if imprimir:
@@ -250,7 +250,7 @@ class Labyrinth:
         for node in colors:
             color = colors[node]
             center = self.tiles_centers[int(node)]
-            self._tiles_marks.append(self._draw_node(center, self.tile_length // 4, color))
+            self._tiles_marks.append(self._draw_node(center, self.tile_length // 4, color, outline=''))
 
     def _delete_marks(self):
         """
@@ -428,7 +428,8 @@ class Labyrinth:
 
         # Delete the previous graph drawn on the canvas
         self.delete_graph()
-        radius = self.tile_length // 2 - self.tile_length // 4
+        bg_color = 'lightblue'
+        radius = self.tile_length // 2 - self.tile_length // 7  # Calculate the radius of the nodes
         # Iterate over the edges in the graph
         for edge in graph['E']:
             # Check if the edge exists
@@ -442,14 +443,8 @@ class Labyrinth:
                 # Draw the edge on the canvas
                 self._list_edges.append(self._draw_edge(center_o, center_i))
 
-            # Check if the origin and destination vertices have a specified color
-            color_o = graph['colors'][str(vertex_o)] if graph['colors'].get(
-                str(vertex_o)) else 'coral'
-
-            self._list_nodes.append(self._draw_node(center_o, radius, color=color_o))
-            color_i = graph['colors'][str(vertex_i)] if graph['colors'].get(
-                str(vertex_i)) else 'coral'
-            self._list_nodes.append(self._draw_node(center_i, radius, color=color_i))
+            self._list_nodes.append(self._draw_node(center_o, radius, color=bg_color))
+            self._list_nodes.append(self._draw_node(center_i, radius, color=bg_color))
 
     def delete_graph(self):
         """
@@ -469,7 +464,7 @@ class Labyrinth:
                 self.canvas.delete(node)
             self._list_nodes = list()  # Reset the list of nodes
 
-    def _draw_node(self, center: tuple, radius: int, color: str):
+    def _draw_node(self, center: tuple, radius: int, color: str = '', outline: str = 'black'):
         """
         Draw a node (circle) on the canvas.
 
@@ -478,11 +473,14 @@ class Labyrinth:
 
         :param center: (tuple) A tuple containing the x and y coordinates of the center of the circle.
         :param radius: (int) The radius of the circle.
-        :param color: (str) The color to fill the circle with.
+        :param color: (str) The color to fill the circle with. Default is an empty string. If color is an empty string,
+                        the node is not filled.
+        :param outline: (str) The color of the outline of the circle. Default is 'black'. If outline is an empty string,
+                        the circle has no outline.
         :return: (int) The ID of the created circle.
         """
         circle = self.canvas.create_oval(center[0] - radius, center[1] - radius, center[0] + radius, center[1] + radius,
-                                         fill=color, outline='')
+                                         fill=color, outline=outline)
         return circle
 
     def _draw_edge(self, start: tuple, end: tuple):
