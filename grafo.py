@@ -153,6 +153,26 @@ class Grafo:
         # Close the file_graph
         file_graph.close()
 
+    def delete_edge(self, vertex_o: int, vertex_i: int):
+        """
+        This method deletes an edge between two vertices in the graph. If the edge does not exist, it prints a message and
+        does not delete the edge. If the vertices do not exist in the graph, it prints a message and does not delete the edge.
+
+        :param vertex_o: (int) The origin vertex of the edge.
+        :param vertex_i: (int) The destination vertex of the edge.
+        :return: None
+        """
+        # Verify if the edge exists
+        if f"({vertex_o}, {vertex_i})" in self.E or f"({vertex_i}, {vertex_o})" in self.E:
+            # Delete the edge from the graph
+            del self.E[f"({vertex_o}, {vertex_i})"]
+            # Delete the edge from the vertices
+            self.V[vertex_o].remove(vertex_i)
+            self.V[vertex_i].remove(vertex_o)
+        else:
+            if __name__ == '__main__':
+                print(f"The edge ({vertex_o}, {vertex_i}) does not exist.")
+
     def add_edge(self, vertex_o: int, vertex_i: int, weight: int):
         """
         This method adds an edge between two vertices in the graph. If the edge already exists, it prints a message and
