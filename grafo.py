@@ -163,9 +163,15 @@ class Grafo:
         :return: None
         """
         # Verify if the edge exists
-        if f"({vertex_o}, {vertex_i})" in self.E or f"({vertex_i}, {vertex_o})" in self.E:
+        logical_a = f"({vertex_o}, {vertex_i})" in self.E
+        logical_b = f"({vertex_i}, {vertex_o})" in self.E
+        if logical_a or logical_b:
             # Delete the edge from the graph
-            del self.E[f"({vertex_o}, {vertex_i})"]
+            if logical_a:
+                del self.E[f"({vertex_o}, {vertex_i})"]
+            else:
+                del self.E[f"({vertex_i}, {vertex_o})"]
+
             # Delete the edge from the vertices
             self.V[vertex_o].remove(vertex_i)
             self.V[vertex_i].remove(vertex_o)
