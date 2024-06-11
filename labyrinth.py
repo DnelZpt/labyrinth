@@ -439,9 +439,9 @@ class Labyrinth:
             center_i = self.tiles_centers[vertex_i]
 
             # If there is a path between the nodes, draw the edge
-            if graph['E'][edge] != 0:
-                # Draw the edge on the canvas
-                self._list_edges.append(self._draw_edge(center_o, center_i))
+            # if graph['E'][edge] != 0:
+            # Draw the edge on the canvas
+            self._list_edges.append(self._draw_edge(center_o, center_i))
 
             self._list_nodes.append(self._draw_node(center_o, radius, color=bg_color))
             self._list_nodes.append(self._draw_node(center_i, radius, color=bg_color))
