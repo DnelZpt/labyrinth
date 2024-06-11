@@ -118,7 +118,7 @@ class Grafo:
                  graph, and 'turtle' followed by the turtle's position and direction.
         """
         grafo_g = {'V': self.V, 'E': self.E, 'turtle': self.turtle, 'colors': self.colors,
-                   'show': (self._show_graph, self._cluster_graphs)}
+                   'show': self._show_graph}
         return grafo_g
 
     def send_graph(self):

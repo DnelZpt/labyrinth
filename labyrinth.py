@@ -205,7 +205,7 @@ class Labyrinth:
                 print('The graph structure has been updated from Queue.')
             self._check_walls(graph)
 
-            if graph['show'][0]:
+            if graph['show']:
                 self.draw_graph(graph)
             else:
                 self.delete_graph()
@@ -226,7 +226,7 @@ class Labyrinth:
                     print('The graph structure has been updated from file.')
                 self._check_walls(graph)
 
-                if graph['show'][0]:
+                if graph['show']:
                     self.draw_graph(graph)
                 else:
                     self.delete_graph()
