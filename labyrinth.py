@@ -72,6 +72,8 @@ class Labyrinth:
         Update the labyrinth based on the graph structure.
     _check_walls(self, graph: dict):
         Check and update the walls of the labyrinth based on the graph structure.
+    _is_diagonal(self, vertex_o: int, vertex_i: int):
+        Check if the edge between two vertices is diagonal.
     _update_border(self, vertex_o: int, vertex_i: int, state=False):
         Update the border of a tile in the labyrinth.
     get_tile(self, row, column):
@@ -203,6 +205,12 @@ class Labyrinth:
                 print('The graph structure has been updated from Queue.')
             self._check_walls(graph)
             self._mark_tiles(graph['colors'])
+
+            if graph['show']:
+                self.draw_graph(graph)
+            else:
+                self.delete_graph()
+
             self._mark_turtle(graph['turtle'])
 
         else:
@@ -218,6 +226,12 @@ class Labyrinth:
                     print('The graph structure has been updated from file.')
                 self._check_walls(graph)
                 self._mark_tiles(graph['colors'])
+
+                if graph['show']:
+                    self.draw_graph(graph)
+                else:
+                    self.delete_graph()
+
                 self._mark_turtle(graph['turtle'])
 
         if imprimir:
@@ -275,7 +289,24 @@ class Labyrinth:
                     self._update_border(int(vertex_o), int(vertex_i), state=True)
                 else:
                     # print(f"There is not a wall in edge: ({vertex_o}, {vertex_i})")
-                    self._update_border(int(vertex_o), int(vertex_i))
+                    if not self._is_diagonal(int(vertex_o), int(vertex_i)):
+                        self._update_border(int(vertex_o), int(vertex_i))
+
+    def _is_diagonal(self, vertex_o: int, vertex_i: int):
+        """
+        Check if the edge between two vertices is diagonal.
+
+        This method calculates the row and column positions of the vertices, and then checks if the vertices are
+        diagonally adjacent to each other. If they are, it returns True. Otherwise, it returns False.
+
+        :param vertex_o: (int) The origin vertex.
+        :param vertex_i: (int) The destination vertex.
+        :return: (bool) True if the edge is diagonal, False otherwise.
+        """
+        row_o, col_o = divmod(vertex_o, self.columns)
+        row_i, col_i = divmod(vertex_i, self.columns)
+
+        return abs(row_o - row_i) == 1 and abs(col_o - col_i) == 1
 
     def _update_border(self, vertex_o: int, vertex_i: int, state=False):
         """
@@ -384,22 +415,24 @@ class Labyrinth:
         # Iterate over the edges in the graph
         for edge in graph['E']:
             # Check if the edge exists
-            if graph['E'][edge] != 0:
-                vertex_o, vertex_i = edge[1:-1].split(', ')  # Split the edge into origin and destination vertices
-                vertex_o, vertex_i = int(vertex_o), int(vertex_i)
-                center_o = self.tiles_centers[vertex_o]
-                center_i = self.tiles_centers[vertex_i]
+            vertex_o, vertex_i = edge[1:-1].split(', ')  # Split the edge into origin and destination vertices
+            vertex_o, vertex_i = int(vertex_o), int(vertex_i)
+            center_o = self.tiles_centers[vertex_o]
+            center_i = self.tiles_centers[vertex_i]
 
+            # If there is a path between the nodes, draw the edge
+            if graph['E'][edge] != 0:
                 # Draw the edge on the canvas
                 self._list_edges.append(self._draw_edge(center_o, center_i))
-                # Check if the origin and destination vertices have a specified color
-                color_o = graph['colors'][str(vertex_o)] if graph['colors'].get(
-                    str(vertex_o)) else 'coral'
 
-                self._list_nodes.append(self._draw_node(center_o, radius, color=color_o))
-                color_i = graph['colors'][str(vertex_i)] if graph['colors'].get(
-                    str(vertex_i)) else 'coral'
-                self._list_nodes.append(self._draw_node(center_i, radius, color=color_i))
+            # Check if the origin and destination vertices have a specified color
+            color_o = graph['colors'][str(vertex_o)] if graph['colors'].get(
+                str(vertex_o)) else 'coral'
+
+            self._list_nodes.append(self._draw_node(center_o, radius, color=color_o))
+            color_i = graph['colors'][str(vertex_i)] if graph['colors'].get(
+                str(vertex_i)) else 'coral'
+            self._list_nodes.append(self._draw_node(center_i, radius, color=color_i))
 
     def delete_graph(self):
         """
