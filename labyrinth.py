@@ -289,8 +289,25 @@ class Labyrinth:
                     self._update_border(int(vertex_o), int(vertex_i), state=True)
                 else:
                     # print(f"There is not a wall in edge: ({vertex_o}, {vertex_i})")
-                    if not self._is_diagonal(int(vertex_o), int(vertex_i)):
+                    if not self._is_diagonal(int(vertex_o), int(vertex_i)) and not self._is_far(int(vertex_o),
+                                                                                                int(vertex_i)):
                         self._update_border(int(vertex_o), int(vertex_i))
+
+    def _is_far(self, vertex_o: int, vertex_i: int):
+        """
+        Check if the edge between two vertices is far.
+
+        This method calculates the row and column positions of the vertices, and then checks if the vertices are
+        far from each other. If they are, it returns True. Otherwise, it returns False.
+
+        :param vertex_o: (int) The origin vertex.
+        :param vertex_i: (int) The destination vertex.
+        :return: (bool) True if the edge is far, False otherwise.
+        """
+        row_o, col_o = divmod(vertex_o, self.columns)
+        row_i, col_i = divmod(vertex_i, self.columns)
+
+        return abs(row_o - row_i) > 1 or abs(col_o - col_i) > 1
 
     def _is_diagonal(self, vertex_o: int, vertex_i: int):
         """
@@ -306,7 +323,7 @@ class Labyrinth:
         row_o, col_o = divmod(vertex_o, self.columns)
         row_i, col_i = divmod(vertex_i, self.columns)
 
-        return abs(row_o - row_i) == 1 and abs(col_o - col_i) == 1
+        return abs(row_o - row_i) >= 1 and abs(col_o - col_i) >= 1
 
     def _update_border(self, vertex_o: int, vertex_i: int, state=False):
         """
@@ -483,6 +500,6 @@ class Labyrinth:
 
 
 if __name__ == '__main__':
-    maze = Labyrinth(2, 3, path='/dev/shm/graph.json')  # linux
+    maze = Labyrinth(4, 4, path='/dev/shm/graph.json')  # linux
     # maze = Labyrinth(2, 3, path=r'C:\Users\German Andres\Desktop\grafo.json')  # windows
     maze.start()
