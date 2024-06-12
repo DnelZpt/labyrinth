@@ -63,6 +63,8 @@ class Grafo:
         Gets the graph and puts it into the global queue 'cola'.
     save_graph(self, path: str):
         Gets the graph and saves it as a JSON file at the specified path.
+    delete_edge(self, vertex_o: int, vertex_i: int):
+        Deletes an edge between two vertices in the graph
     add_edge(self, vertex_o: int, vertex_i: int, weight: int):
         Adds an edge between two vertices in the graph.
     show(self):
@@ -87,12 +89,15 @@ class Grafo:
                     Default is an empty dictionary.
         :return: None
         """
+        self.walls_list = list()  # List of tuples with the walls of the labyrinth
         if V is None:
             V = dict()
         self.V = V
         if E is None:
             E = dict()
         self.E = E
+        if self.E is not None:
+            self._update_walls()
         if turtle is None:
             turtle = dict()
         self.turtle = turtle
@@ -107,6 +112,35 @@ class Grafo:
         """
         return f'Vertices: {self.V}\nEdges: {self.E}\nTurtle: {self.turtle}\nColors: {self.colors}'
 
+    def _update_walls(self):
+        """
+        Update the list of walls of the labyrinth.
+
+        This method updates the list of walls of the labyrinth. The list of walls is a list of tuples with the walls of the
+        labyrinth. Each tuple has the form (vertex_o, vertex_i) where vertex_o and vertex_i are the vertices that are
+        separated by a wall.
+
+        :return: None
+        """
+        # Iterate over the edges of the graph
+        for edge in self.E:
+            # If the weight of the edge is 0, it means there is a wall between the vertices
+            # Get the vertices
+            vertex_o, vertex_i = edge[1:-1].split(', ')
+
+            logical_a = [int(vertex_o), int(vertex_i)] in self.walls_list
+            logical_b = [int(vertex_i), int(vertex_o)] in self.walls_list
+
+            if self.E[edge] == 0 and not (logical_a or logical_b):
+                # Add the wall to the list of walls
+                self.walls_list.append([int(vertex_o), int(vertex_i)])
+
+            elif self.E[edge] == 1 and (logical_a or logical_b):
+                if logical_a:
+                    self.walls_list.remove([int(vertex_o), int(vertex_i)])
+                else:
+                    self.walls_list.remove([int(vertex_i), int(vertex_o)])
+
     def get_graph(self):
         """
         Get the graph.
@@ -118,7 +152,7 @@ class Grafo:
                  graph, and 'turtle' followed by the turtle's position and direction.
         """
         grafo_g = {'V': self.V, 'E': self.E, 'turtle': self.turtle, 'colors': self.colors,
-                   'show': self._show_graph}
+                   'show': self._show_graph, 'walls': self.walls_list}
         return grafo_g
 
     def send_graph(self):
@@ -193,6 +227,17 @@ class Grafo:
         """
         # Verify if the edge already exists
         if f"({vertex_o}, {vertex_i})" in self.E or f"({vertex_i}, {vertex_o})" in self.E:
+            # If exists but with different weight, update the weight
+            if f"({vertex_o}, {vertex_i})" in self.E:
+                if self.E[f"({vertex_o}, {vertex_i})"] != weight:
+                    self.E[f"({vertex_o}, {vertex_i})"] = weight
+                    self._add_wall(vertex_o, vertex_i, weight)
+
+            elif f"({vertex_i}, {vertex_o})" in self.E:
+                if self.E[f"({vertex_i}, {vertex_o})"] != weight:
+                    self.E[f"({vertex_i}, {vertex_o})"] = weight
+                    self._add_wall(vertex_o, vertex_i, weight)
+
             if __name__ == '__main__':
                 print(f"The edge ({vertex_o}, {vertex_i}) already exists.")
         else:
@@ -207,6 +252,32 @@ class Grafo:
                 self.V[vertex_i].append(vertex_o)
             # Add the edge to the graph
             self.E[f"({vertex_o}, {vertex_i})"] = weight
+            self._add_wall(vertex_o, vertex_i, weight)
+
+    def _add_wall(self, vertex_o: int, vertex_i: int, weight: int):
+        """
+        This method adds a wall between two vertices in the graph. If the wall already exists, it prints a message and
+        does not add the wall. If the vertices do not exist in the graph, it adds them. The wall is represented as a
+        string of the form '(vertex_o, vertex_i)' and the weight of the wall is an integer.
+
+        :param vertex_o: (int) The origin vertex of the wall.
+        :param vertex_i: (int) The destination vertex of the wall.
+        :param weight: (int) The weight of the wall. If the weight is 0, there is a wall between the nodes
+                       (a wall exists), if the weight is 1, there is no wall between the nodes (a wall does not exist).
+        :return: None
+        """
+        # Verify if the wall already exists
+        if [vertex_o, vertex_i] in self.walls_list or [vertex_i, vertex_o] in self.walls_list:
+            if weight == 1:
+                if [vertex_o, vertex_i] in self.walls_list:
+                    self.walls_list.remove([vertex_o, vertex_i])
+                else:
+                    self.walls_list.remove([vertex_i, vertex_o])
+            if __name__ == '__main__':
+                print(f"The wall ({vertex_o}, {vertex_i}) already exists.")
+        else:
+            if weight == 0:  # Add the wall to the list of walls
+                self.walls_list.append([vertex_o, vertex_i])
 
     def show(self, show: bool = True):
         """
