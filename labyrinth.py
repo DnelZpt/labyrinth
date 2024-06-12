@@ -443,8 +443,9 @@ class Labyrinth:
             # Draw the edge on the canvas
             self._list_edges.append(self._draw_edge(center_o, center_i))
 
-            self._list_nodes.append(self._draw_node(center_o, radius, color=bg_color))
-            self._list_nodes.append(self._draw_node(center_i, radius, color=bg_color))
+        for node in graph['V']:
+            center = self.tiles_centers[int(node)]
+            self._list_nodes.append(self._draw_node(center, radius, color=bg_color))
 
     def delete_graph(self):
         """
