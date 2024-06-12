@@ -264,34 +264,33 @@ class Labyrinth:
 
     def _check_walls(self, graph: dict):
         """
-         Check and update the walls of the labyrinth based on the graph structure.
+        Check and update the walls of the labyrinth based on the graph structure.
 
-         This method iterates over the vertices in the graph. For each pair of vertices, it checks if there is an edge
-         between them in the graph. If there is an edge and its value is 0, it means there is a wall between the
-         vertices in the labyrinth, so it calls the _update_border method to update the border of the tile at the
-         position of the first vertex to exist. If the value of the edge is not 0, it means there is no wall between the
-         vertices in the labyrinth, so it calls the _update_border method to update the border of the tile at the
-         position of the first vertex to not exist.
+        This method iterates over the vertices in the graph. For each pair of vertices, it checks if the edge
+        between them is in the 'walls' list in the graph. If it is, it means there is a wall between the
+        vertices in the labyrinth, so it calls the _update_border method to update the border of the tile at the
+        position of the first vertex to exist.
 
-         :param graph: (dict) The graph structure of the labyrinth. It is a dictionary with two keys: 'V' and 'E'.
-                       'V' maps to a dictionary where each key is a vertex and the value is a list of vertices adjacent to the key.
-                       'E' maps to a dictionary where each key is a tuple of two vertices and the value is the weight of the edge
-                       between the vertices.
-         :return: None
-         """
+        :param graph: (dict) The graph structure of the labyrinth. It is a dictionary with three keys: 'V', 'E', and 'walls'.
+                      'V' maps to a dictionary where each key is a vertex and the value is a list of vertices adjacent to the key.
+                      'E' maps to a dictionary where each key is a tuple of two vertices and the value is the weight of the edge
+                      between the vertices.
+                      'walls' is a list of tuples, each of which represents an edge that is a wall in the labyrinth.
+        :return: None
+        """
         vertex_list = graph['V']
-        edges_list = graph['E']
+        walls_list = graph['walls']
         # vertex_o is the origin vertex, vertex_i is the destination vertex
         for vertex_o in vertex_list:
             for vertex_i in vertex_list[vertex_o]:
-                if edges_list.get(f"({vertex_o}, {vertex_i})") == 0 or edges_list.get(f"({vertex_i}, {vertex_o})") == 0:
-                    # print(f"There is a wall in edge:     ({vertex_o}, {vertex_i})")
-                    self._update_border(int(vertex_o), int(vertex_i), state=True)
+                vertex_o = int(vertex_o)
+                vertex_i = int(vertex_i)
+                if [vertex_o, vertex_i] in walls_list or [vertex_i, vertex_o] in walls_list:
+                    print(f"Wall: {vertex_o} -> {vertex_i}")
+                    self._update_border(vertex_o, vertex_i, state=True)
                 else:
-                    # print(f"There is not a wall in edge: ({vertex_o}, {vertex_i})")
-                    if not self._is_diagonal(int(vertex_o), int(vertex_i)) and not self._is_far(int(vertex_o),
-                                                                                                int(vertex_i)):
-                        self._update_border(int(vertex_o), int(vertex_i))
+                    if not self._is_diagonal(vertex_o, vertex_i) and not self._is_far(vertex_o,vertex_i):
+                        self._update_border(vertex_o, vertex_i)
 
     def _is_far(self, vertex_o: int, vertex_i: int):
         """
@@ -417,11 +416,12 @@ class Labyrinth:
         This method first checks if the graph exists. If it does, it deletes the previous graph drawn on the canvas.
         Then it calculates the radius of the nodes to be drawn.
 
-        It then iterates over the edges in the graph. For each edge that exists (value is not 0), it splits the edge into
-        its origin and destination vertices, calculates the center points of these vertices, and draws the edge on the canvas.
+        It then iterates over the edges in the graph. For each edge that exists (value is not 0), it splits the edge
+        into its origin and destination vertices, calculates the center points of these vertices, and draws the edge on
+        the canvas.
 
-        It then checks if the origin and destination vertices have a specified color in the graph. If they do, it uses that
-        color to draw the nodes. If they don't, it uses the default color 'coral' to draw the nodes.
+        It then checks if the origin and destination vertices have a specified color in the graph. If they do, it uses
+        that color to draw the nodes. If they don't, it uses the default color 'coral' to draw the nodes.
 
         :return: None
         """
