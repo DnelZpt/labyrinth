@@ -231,12 +231,12 @@ class Grafo:
             if f"({vertex_o}, {vertex_i})" in self.E:
                 if self.E[f"({vertex_o}, {vertex_i})"] != weight:
                     self.E[f"({vertex_o}, {vertex_i})"] = weight
-                    self._update_walls()
+                    self._add_wall(vertex_o, vertex_i, weight)
 
             elif f"({vertex_i}, {vertex_o})" in self.E:
                 if self.E[f"({vertex_i}, {vertex_o})"] != weight:
                     self.E[f"({vertex_i}, {vertex_o})"] = weight
-                    self._update_walls()
+                    self._add_wall(vertex_o, vertex_i, weight)
 
             if __name__ == '__main__':
                 print(f"The edge ({vertex_o}, {vertex_i}) already exists.")
@@ -252,7 +252,32 @@ class Grafo:
                 self.V[vertex_i].append(vertex_o)
             # Add the edge to the graph
             self.E[f"({vertex_o}, {vertex_i})"] = weight
-            self._update_walls()
+            self._add_wall(vertex_o, vertex_i, weight)
+
+    def _add_wall(self, vertex_o: int, vertex_i: int, weight: int):
+        """
+        This method adds a wall between two vertices in the graph. If the wall already exists, it prints a message and
+        does not add the wall. If the vertices do not exist in the graph, it adds them. The wall is represented as a
+        string of the form '(vertex_o, vertex_i)' and the weight of the wall is an integer.
+
+        :param vertex_o: (int) The origin vertex of the wall.
+        :param vertex_i: (int) The destination vertex of the wall.
+        :param weight: (int) The weight of the wall. If the weight is 0, there is a wall between the nodes
+                       (a wall exists), if the weight is 1, there is no wall between the nodes (a wall does not exist).
+        :return: None
+        """
+        # Verify if the wall already exists
+        if [vertex_o, vertex_i] in self.walls_list or [vertex_i, vertex_o] in self.walls_list:
+            if weight == 1:
+                if [vertex_o, vertex_i] in self.walls_list:
+                    self.walls_list.remove([vertex_o, vertex_i])
+                else:
+                    self.walls_list.remove([vertex_i, vertex_o])
+            if __name__ == '__main__':
+                print(f"The wall ({vertex_o}, {vertex_i}) already exists.")
+        else:
+            if weight == 0:  # Add the wall to the list of walls
+                self.walls_list.append([vertex_o, vertex_i])
 
     def show(self, show: bool = True):
         """
