@@ -286,7 +286,6 @@ class Labyrinth:
                 vertex_o = int(vertex_o)
                 vertex_i = int(vertex_i)
                 if [vertex_o, vertex_i] in walls_list or [vertex_i, vertex_o] in walls_list:
-                    print(f"Wall: {vertex_o} -> {vertex_i}")
                     self._update_border(vertex_o, vertex_i, state=True)
                 else:
                     if not self._is_diagonal(vertex_o, vertex_i) and not self._is_far(vertex_o,vertex_i):
