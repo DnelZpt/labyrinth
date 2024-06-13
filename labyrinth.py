@@ -499,6 +499,6 @@ class Labyrinth:
 
 
 if __name__ == '__main__':
-    maze = Labyrinth(4, 4, path='/dev/shm/graph.json')  # linux
+    maze = Labyrinth(10, 10, path='/dev/shm/graph.json')  # linux
     # maze = Labyrinth(2, 3, path=r'C:\Users\German Andres\Desktop\grafo.json')  # windows
     maze.start()
