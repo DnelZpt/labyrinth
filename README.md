@@ -109,14 +109,35 @@ grafo.add_edge(0, 1, 1)  # Add a path between rooms 0 and 1
 grafo.add_edge(1, 2, 0)  # Add a wall between rooms 1 and 2
 ```
 
-4. Send the graph to the Queue using the `send_graph` method. This method gets the graph and puts it into the global 
+4. Delete an edge from the graph using the `delete_edge` method. This method takes two arguments: the two vertices that
+the edge connects.
+
+```python
+grafo.delete_edge(1, 2)  # Delete the wall between rooms 1 and 2
+```
+
+5. Show the graph in the GUI using the `show` method. This method sets the `show_graph` attribute to `True`, which 
+displays the graph in the GUI when the program is run.
+
+```python
+grafo.show()
+```
+
+If you don't want to show the graph in the GUI, you can use the `show` method with the `False` argument:
+
+```python 
+grafo.show(False)
+```
+
+
+6. Send the graph to the Queue using the `send_graph` method. This method gets the graph and puts it into the global 
 queue 'cola'. This can be used to share the graph between different parts of the program or with different threads.
 
 ```python
 grafo.send_graph()
 ```
 
-5. Save the graph as a JSON file using the `save_graph` method. This method takes one argument: the path to the JSON 
+7. Save the graph as a JSON file using the `save_graph` method. This method takes one argument: the path to the JSON 
    file.
 
 ```python
@@ -154,7 +175,8 @@ For the example above, the JSON file would look like this:
     "4": 5,
     "5": "f"
   },
-  "colors": {}
+  "colors": {},
+  "show": False
 }
 ```
 And the labyrinth would look like this:
@@ -247,6 +269,35 @@ To run this module, navigate to the project directory and run the `ejemplo_2.py`
 ```bash
 python3 ejemplo_2.py
 ```
+
+## How to Contribute
+
+We welcome contributions from everyone. Here are a few ways you can help:
+
+1. **Report bugs**: If you find a bug, please create a new issue in the GitHub issue tracker. 
+    Describe the problem in detail so that it can be reproduced. Include information about your operating system and 
+    Python version.
+
+2. **Suggest enhancements**: If you have an idea for a new feature or an improvement to an existing feature, please 
+    create a new issue in the GitHub issue tracker. Describe your idea in detail and explain how it would benefit the project.
+
+3. **Contribute code**: If you're able to write code and want to fix a bug or implement a new feature, we would be happy 
+to accept your contribution. Here's how you can do it:
+
+    - Fork the repository on GitHub.
+    - Clone your forked repository to your local machine.
+    - Create a new branch for your changes.
+    - Write the code for your changes. Make sure to follow the existing coding style and comment your code.
+    - Test your changes to ensure they work correctly and don't introduce new bugs.
+    - Commit your changes and push them to your forked repository.
+    - Submit a pull request with your changes.
+
+Please note that by contributing code, you agree to license your contribution under the terms of the MIT license.
+
+4. **Improve documentation**: Good documentation is just as important as good code. If you can improve the README, add 
+comments to the code, or write tutorials or guides, your contribution would be very valuable.
+
+Remember, the best way to get your changes included is to submit a pull request. We look forward to your contributions!
 
 ## License
 
