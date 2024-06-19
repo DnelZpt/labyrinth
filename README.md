@@ -113,7 +113,7 @@ grafo.add_edge(1, 2, 0)  # Add a wall between rooms 1 and 2
 the edge connects.
 
 ```python
-grafo.delete_edge(1, 2)  # Delete the wall between rooms 1 and 2
+grafo.delete_edge(1, 2)  # Delete the edge between rooms 1 and 2
 ```
 
 5. Show the graph in the GUI using the `show` method. This method sets the `show_graph` attribute to `True`, which 
